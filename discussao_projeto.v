@@ -54,7 +54,25 @@ Theorem perm_equiv: forall l l', equiv l l' <-> perm l l'.
 Proof.
   split.
   (* -> 12 pontos *)
-  - admit.
+  - intro H. unfold equiv in H.
+    generalize dependent l'.
+    induction l.
+    + intros l' H.
+      admit.
+    + intros l' H. simpl in H.
+      generalize dependent l'.
+      intro l'. induction l'.
+      * intro H. specialize (H a).
+        rewrite <- beq_nat_refl in H.
+        simpl in H. Search False.
+        inversion H.
+      (*  destruct (a =? a) eqn:Ha.
+        ** simpl in H. inversion H.
+        ** apply False_ind.
+           apply beq_nat_false in Ha.
+           apply Ha. reflexivity. *)
+      * 
+      destruct (x =? a).
   (* <- 6 pontos *)
   - intro H. induction H.
     -- unfold equiv. intro x. reflexivity.
