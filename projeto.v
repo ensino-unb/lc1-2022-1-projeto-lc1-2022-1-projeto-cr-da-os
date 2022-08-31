@@ -12,7 +12,6 @@ Inductive perm: list nat -> list nat -> Prop :=
 
 Lemma perm_equiv_Permutation: forall l1 l2, perm l1 l2 <-> Permutation l1 l2.
 
-
 (* prova: 2 pontos *)
 Proof.
   split.
@@ -20,7 +19,7 @@ Proof.
     -- apply Permutation_refl.
     -- apply Permutation.perm_swap.
     -- apply Permutation.perm_skip.
-    --- apply IHperm.
+      --- apply IHperm.
     -- apply Permutation.perm_trans with (l').
       --- apply IHperm1.
       --- apply IHperm2.
@@ -53,13 +52,22 @@ Proof.
   (* <- 6 pontos *)
   - intro H. induction H.
     -- unfold equiv. intro x. reflexivity.
-    -- unfold equiv. admit.
+    -- unfold equiv. intro x0. simpl.
+      destruct (x0 =? x).
+      --- destruct (x0 =? y).
+        ---- reflexivity.
+        ---- reflexivity. 
+      --- destruct (x0 =? y).
+        ---- reflexivity.
+        ---- reflexivity.
     -- unfold equiv in *. intro x'. simpl.
       destruct (x' =? x) eqn:H'.
+      --- rewrite IHperm. reflexivity.
+      --- rewrite IHperm. reflexivity.
+    -- unfold equiv in *. intro x.
       --- admit.
-      --- admit.
-    -- Admitted.
-    
+Qed.
+
 (* ou (exclusivo) *)
 Theorem Permutation_equiv: forall l l', equiv l l' <-> Permutation l l'.
 Proof.
