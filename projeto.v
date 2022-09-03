@@ -68,7 +68,3 @@ Proof.
       --- admit.
 Qed.
 
-(* ou (exclusivo) *)
-Theorem Permutation_equiv: forall l l', equiv l l' <-> Permutation l l'.
-Proof.
-  Admitted.
