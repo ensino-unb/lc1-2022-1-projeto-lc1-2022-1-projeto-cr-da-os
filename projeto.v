@@ -40,31 +40,97 @@ Fixpoint num_oc (x: nat) (l: list nat): nat :=
   | h::tl => if (x =? h) then S (num_oc x tl) else num_oc x tl
 end.
 
-Eval compute in (num_oc 2 (2::3::2::nil)).
-
 Definition equiv l l' := forall x, num_oc x l = num_oc x l'.
+
+Lemma equiv_refl: forall l, equiv l l.
+Proof.
+  intro l.
+  unfold equiv.
+  intro x.
+  reflexivity.
+Qed.
+
+Lemma equiv_hd: forall l l' x, equiv l l' -> equiv (x :: l) (x :: l').
+Proof.
+  intros l l' x H.
+  unfold equiv in *.
+  intro x'.
+  destruct (x'=?x) eqn:H'.
+  -simpl.
+    rewrite H'.
+    rewrite H.
+    reflexivity.
+  -simpl.
+    rewrite H'.
+    rewrite H.
+    reflexivity.
+Qed.
+
+Lemma equiv_nil: forall l, equiv nil l -> l = nil.
+Proof.
+  intro l.
+  case l.
+  - intro H.
+    reflexivity.
+  - intros n l' H.
+    unfold equiv in H.
+    specialize (H n).
+    simpl in H.
+    rewrite Nat.eqb_refl in H.
+    inversion H.
+Qed.
+
+Lemma equiv_trans: forall l1 l2 l3, equiv l1 l2 -> equiv l2 l3 -> equiv l1 l3.
+Proof.
+  intros.
+  induction l1.
+  -apply equiv_nil in H.
+   rewrite H in H0.
+   assumption. 
+  -unfold equiv in *.
+   simpl in *.
+   intros n.
+   assert (H := H n).
+   destruct (n =? a) in *.
+   + rewrite H.
+     apply H0.
+   + rewrite H.
+     apply H0.
+Qed.
 
 Theorem perm_equiv: forall l l', equiv l l' <-> perm l l'.
 Proof.
   split.
   (* -> 12 pontos *)
-  - admit.
+  - intro H. unfold equiv in H.
+    generalize dependent l'.
+    induction l.
+    + intros l' H.
+      admit.
+    + intros l' H. simpl in H.
+      generalize dependent l'.
+      intro l'. induction l'.
+      * intro H. specialize (H a).
+        rewrite <- beq_nat_refl in H.
+        simpl in H.
+        inversion H.
+      * admit.
   (* <- 6 pontos *)
   - intro H. induction H.
     -- unfold equiv. intro x. reflexivity.
-    -- unfold equiv. intro x0. simpl.
-      destruct (x0 =? x).
-      --- destruct (x0 =? y).
-        ---- reflexivity.
-        ---- reflexivity. 
-      --- destruct (x0 =? y).
-        ---- reflexivity.
-        ---- reflexivity.
-    -- unfold equiv in *. intro x'. simpl.
-      destruct (x' =? x) eqn:H'.
-      --- rewrite IHperm. reflexivity.
-      --- rewrite IHperm. reflexivity.
-    -- unfold equiv in *. intro x.
-      --- admit.
-Qed.
+    -- apply equiv_trans with (y::x::l).
+      --- unfold equiv. intro x0. simpl.
+       ---- destruct (x0 =? x) eqn:H. destruct(x0 =? y) eqn:J.
+        ----- reflexivity.
+        ----- reflexivity.
+        ----- destruct(x0 =? y) eqn:J.
+         ------ reflexivity.
+         ------ reflexivity.
+      --- apply equiv_hd. apply equiv_hd.
+          unfold equiv. intro x0. reflexivity.
+    -- apply equiv_hd. apply IHperm.
+    -- apply equiv_trans with l'.
+      --- assumption.
+      --- assumption.
+Admitted.
 
