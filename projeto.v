@@ -92,7 +92,7 @@ Proof.
         rewrite <- beq_nat_refl in H.
         simpl in H.
         inversion H.
-      * admit.  
+      * intros. admit.  
   (* <- 6 pontos *)
   - intro H. induction H.
     -- unfold equiv. intro x. reflexivity.

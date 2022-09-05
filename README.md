@@ -6,4 +6,4 @@ Repositório criado para implementação do Projeto 1 da disciplina de Lógica C
 Integrantes: 
    - Cris
    - Danillo
-   - Oseias
+   - Oseias Romeiro - 211036123
