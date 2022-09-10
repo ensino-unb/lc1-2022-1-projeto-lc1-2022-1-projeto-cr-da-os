@@ -46,7 +46,7 @@ Proof.
   intros.
   unfold equiv in *.
   intro x0. simpl.
-  destruct (x0 =? x) eqn:H'.
+  destruct (x0 =? x).
   - rewrite H. reflexivity.
   - rewrite H. reflexivity.
 Qed.
@@ -55,7 +55,7 @@ Lemma equiv_nil: forall l, equiv nil l -> l = nil.
 Proof.
   intro l. case l.
   - intro H. reflexivity.
-  - intros n l' H.
+  - intros.
     unfold equiv in H.
     specialize (H n). simpl in H.
     rewrite Nat.eqb_refl in H.
@@ -66,19 +66,27 @@ Lemma equiv_trans: forall l1 l2 l3, equiv l1 l2 -> equiv l2 l3 -> equiv l1 l3.
 Proof.
   intros. induction l1. 
   - apply equiv_nil in H.
-   -- rewrite H in H0. apply H0. 
+    rewrite H in H0. apply H0. 
   - unfold equiv in *. simpl in *.
-   intros n.
-   assert (H := H n).
-   destruct (n =? a) in *.
-   -- rewrite H. apply H0.
-   -- rewrite H. apply H0.
+    intro x.
+    assert (H := H x).
+    destruct (x =? a) in *.
+    -- rewrite H. apply H0.
+    -- rewrite H. apply H0.
 Qed.
 
-Lemma sub_proof: forall x l l', S (num_oc x l) = S (num_oc x l') -> num_oc x l = num_oc x l'.
-Proof.
-  intros.
+Lemma perm_list_comp: forall x n l, num_oc x l = S n -> exists l1 l2, l = l1++(x::l2).
 Admitted.
+
+Lemma perm_eq_conc: forall l1 l2 a, perm (a :: l1 ++ l2) (l1 ++ a :: l2).
+Proof.
+  induction l1.
+  - intros. simpl. apply perm_eq.
+  - intros. simpl.
+    apply perm_trans with (a :: a0 :: l1 ++ l2).
+    -- apply perm_swap.
+    -- apply perm_hd. apply IHl1.
+Qed.
 
 Theorem perm_equiv: forall l l', equiv l l' <-> perm l l'.
 Proof.
@@ -91,6 +99,17 @@ Proof.
       apply equiv_nil in H. rewrite H. apply perm_eq.
     + intros l' H. simpl in H.
       generalize dependent l'.
+      intros. specialize (H a).
+      rewrite Nat.eqb_refl in H.
+      symmetry in H.
+      apply perm_list_comp in H.
+      destruct H as [l1 H]; destruct H as [l2 H].
+      rewrite H.
+      apply perm_trans with (a :: l1 ++ l2).
+      * apply perm_hd. apply IHl. admit.
+      * apply perm_eq_conc.
+      
+      (*
       intro l'. induction l'.
       * intro H. specialize (H a).
         rewrite <- beq_nat_refl in H.
@@ -107,23 +126,24 @@ Proof.
            *** apply sub_proof.
                apply H.
            *** apply H.
-        ** admit.
+        ** admit.*)
+        
   (* <- 6 pontos *)
   - intro H. induction H.
-    -- unfold equiv. intro x. reflexivity.
-    -- apply equiv_trans with (y::x::l).
-      --- unfold equiv. intro x0. simpl.
-       ---- destruct (x0 =? x) eqn:H. destruct(x0 =? y) eqn:J.
-            + reflexivity.
-            + reflexivity.
-            + destruct(x0 =? y) eqn:J.
-             * reflexivity.
-             * reflexivity.
-      --- apply equiv_hd. apply equiv_hd.
-          unfold equiv. intro x0. reflexivity.
-    -- apply equiv_hd. apply IHperm.
-    -- apply equiv_trans with l'.
-      --- assumption.
-      --- assumption.
+    + unfold equiv. intro x. reflexivity.
+    + apply equiv_trans with (y::x::l).
+      * unfold equiv. intro x0. simpl.
+         -- destruct (x0 =? x) eqn:H. destruct(x0 =? y) eqn:J.
+            ** reflexivity.
+            ** reflexivity.
+            ** destruct(x0 =? y) eqn:J.
+              --- reflexivity.
+              --- reflexivity.
+      * apply equiv_hd. apply equiv_hd.
+        unfold equiv. intro x0. reflexivity.
+    + apply equiv_hd. apply IHperm.
+    + apply equiv_trans with l'.
+      * assumption.
+      * assumption.
 Admitted.
 
