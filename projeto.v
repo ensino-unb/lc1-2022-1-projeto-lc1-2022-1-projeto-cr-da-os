@@ -8,7 +8,7 @@ Inductive perm: list nat -> list nat -> Prop :=
 | perm_eq: forall l, perm l l
 | perm_swap: forall x y l, perm (x :: y :: l) (y :: x :: l)
 | perm_hd: forall x l l', perm l l' -> perm (x :: l) (x :: l')
-| perm_trans: forall l l' l'', perm l l' -> perm l' l'' -> perm l' l'' -> perm l l''.
+| perm_trans: forall l l' l'', perm l l' -> perm l' l'' -> perm l l''.
 
 Lemma perm_equiv_Permutation: forall l1 l2, perm l1 l2 <-> Permutation l1 l2.
 
@@ -31,7 +31,6 @@ Proof.
     -- apply perm_trans with (l').
       --- apply IHPermutation1.
       --- apply IHPermutation2.
-      --- apply IHPermutation2.
 Qed.
 
 Fixpoint num_oc (x: nat) (l: list nat): nat :=
@@ -47,7 +46,7 @@ Proof.
   intros.
   unfold equiv in *.
   intro x0. simpl.
-  destruct (x0=?x) eqn:H'.
+  destruct (x0 =? x) eqn:H'.
   - rewrite H. reflexivity.
   - rewrite H. reflexivity.
 Qed.
@@ -76,6 +75,11 @@ Proof.
    -- rewrite H. apply H0.
 Qed.
 
+Lemma sub_proof: forall x l l', S (num_oc x l) = S (num_oc x l') -> num_oc x l = num_oc x l'.
+Proof.
+  intros.
+Admitted.
+
 Theorem perm_equiv: forall l l', equiv l l' <-> perm l l'.
 Proof.
   split.
@@ -92,7 +96,18 @@ Proof.
         rewrite <- beq_nat_refl in H.
         simpl in H.
         inversion H.
-      * intros. admit.  
+      * intro H. pose proof H.
+        specialize (H0 a0).
+        destruct (a0 =? a) eqn:Ha.
+        ** symmetry in Ha.
+           apply beq_nat_eq in Ha. subst.
+           apply perm_hd. apply IHl. simpl in H.
+           intro x. specialize (H x).
+           destruct (x =? a).
+           *** apply sub_proof.
+               apply H.
+           *** apply H.
+        ** admit.
   (* <- 6 pontos *)
   - intro H. induction H.
     -- unfold equiv. intro x. reflexivity.
