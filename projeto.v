@@ -109,7 +109,7 @@ Proof.
       * apply perm_hd. apply IHl. admit.
       * apply perm_eq_conc.
       
-      (*
+      (* repenssando indução em l'
       intro l'. induction l'.
       * intro H. specialize (H a).
         rewrite <- beq_nat_refl in H.
@@ -123,9 +123,8 @@ Proof.
            apply perm_hd. apply IHl. simpl in H.
            intro x. specialize (H x).
            destruct (x =? a).
-           *** apply sub_proof.
-               apply H.
-           *** apply H.
+           *** admit.
+           *** admit.
         ** admit.*)
         
   (* <- 6 pontos *)
@@ -143,7 +142,7 @@ Proof.
         unfold equiv. intro x0. reflexivity.
     + apply equiv_hd. apply IHperm.
     + apply equiv_trans with l'.
-      * assumption.
-      * assumption.
+      * apply IHperm1.
+      * apply IHperm2.
 Admitted.
 
